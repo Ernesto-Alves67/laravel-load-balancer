@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+
+class HelloController extends Controller
+{
+    public function hello(Request $request)
+        {
+            $hostname = gethostname();
+            $time = now()->format('H:i:s.v');
+            $ip = $request->ip();
+
+            Log::info("Request: [{$time}] {$ip} → {$hostname}");
+
+            return response()->json([
+                'message' => "Hello from instance: {$hostname}",
+                'at' => $time,
+                'from' => $ip
+            ]);
+        }
+}
