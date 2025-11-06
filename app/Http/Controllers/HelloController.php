@@ -9,13 +9,14 @@ class HelloController extends Controller
 {
     public function hello(Request $request)
         {
+            $container_name = getenv('HOSTNAME');
             $hostname = gethostname();
             $time = now()->format('H:i:s.v');
             $ip = $request->ip();
 
-            Log::info("Request: [{$time}] {$ip} → {$hostname}");
+            Log::info("Request: [{$time}] {$ip} → {$container_name}");
 
-            return response()->json([
+            return response()->json([   
                 'message' => "Hello from instance: {$hostname}",
                 'at' => $time,
                 'from' => $ip
