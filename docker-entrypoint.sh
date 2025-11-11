@@ -22,11 +22,7 @@ if [ -z "$APP_KEY_VALUE" ] || [ "$APP_KEY_VALUE" = "\n" ]; then
   php artisan key:generate --ansi --force
 fi
 
-# Ensure sqlite database file exists
-if [ ! -f storage/database.sqlite ]; then
-  touch storage/database.sqlite
-  chown appuser:appgroup storage/database.sqlite || true
-fi
+
 
 # Run migrations and telescope install unless explicitly skipped
 if [ "${SKIP_MIGRATIONS:-0}" != "1" ]; then

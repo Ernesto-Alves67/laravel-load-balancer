@@ -26,11 +26,6 @@ ARG GROUP_ID=1000
 RUN addgroup -g ${GROUP_ID} -S appgroup && \
     adduser -u ${USER_ID} -S appuser -G appgroup
 
-# # 6. Gera chave + DB + migrate + Telescope
-# RUN php artisan key:generate  \
-#     && touch storage/database.sqlite \
-#     && php artisan migrate \
-#     && php artisan telescope:install
 
 # 7. Permissões (DEPOIS do usuário)
 RUN chown -R appuser:appgroup storage bootstrap/cache .env \
