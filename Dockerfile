@@ -7,7 +7,7 @@ RUN apk add --no-cache \
     zip unzip \
     sqlite sqlite-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql pdo_sqlite
+    && docker-php-ext-install -j$(nproc) gd pdo pdo_mysql
 
 # 2. Instala Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -28,9 +28,10 @@ RUN addgroup -g ${GROUP_ID} -S appgroup && \
 
 
 # 7. Permissões (DEPOIS do usuário)
-RUN chown -R appuser:appgroup storage bootstrap/cache .env \
-    && chmod -R 775 storage bootstrap/cache \
+RUN chown -R appuser:appgroup storage bootstrap database .env \
+    && chmod -R 775 storage bootstrap database \
     && chmod 664 .env || true
+
 
 # Copy entrypoint script to handle runtime tasks (generate key, create sqlite file, migrations)
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh

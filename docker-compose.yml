@@ -8,6 +8,8 @@ services:
     # Os containers serão nomeados sequencialmente: app-1, app-2, app-3, ...
     expose:
       - 9000
+    volumes:
+      - ./storage:/var/www/html/storage
     depends_on:
       mysql:
         condition: service_healthy

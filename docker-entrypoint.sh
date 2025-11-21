@@ -3,38 +3,41 @@ set -e
 
 cd /var/www/html || exit 1
 
-# Create storage directories
-mkdir -p storage/database storage/framework/cache/data storage/framework/sessions storage/framework/views
+#########################################
+# 1. Garantir pastas essenciais
+#########################################
 
-# Ensure .env exists
-if [ ! -f .env ]; then
-  if [ -f .env.example ]; then
-    cp .env.example .env
-  else
-    touch .env
-  fi
-fi
+mkdir -p storage \
+         storage/app \
+         storage/framework \
+         storage/framework/cache/data \
+         storage/framework/sessions \
+         storage/framework/views \
+         storage/logs \
+         bootstrap/cache
 
-# Generate application key if missing
-APP_KEY_VALUE=$(grep -E '^APP_KEY=' .env | cut -d= -f2-)
-if [ -z "$APP_KEY_VALUE" ] || [ "$APP_KEY_VALUE" = "\n" ]; then
-  echo "Generating APP_KEY..."
-  php artisan key:generate --ansi --force
-fi
+#########################################
+# 2. Garantir permissões corretas
+#########################################
 
+# Usa o UID/GID do usuário atual do container (appuser)
+chown -R "$(id -u):$(id -g)" storage bootstrap/cache
+chmod -R 775 storage bootstrap/cache || true
 
+#########################################
+# 3. NÃO gerar .env, NÃO gerar APP_KEY,
+#    NÃO rodar migrations,
+#    NÃO rodar telescope:install
+#    (isso deve ser feito manualmente, 1 vez)
+#########################################
 
-# Run migrations and telescope install unless explicitly skipped
-if [ "${SKIP_MIGRATIONS:-0}" != "1" ]; then
-  echo "Running migrations..."
-  php artisan migrate --force || true
-  echo "Installing Telescope (if not installed)..."
-  php artisan telescope:install --ansi || true
-fi
+#########################################
+# 4. NÃO fazer config:cache/cache:clear
+#    no entrypoint (quebra cluster)
+#########################################
 
-# Cache config and clear cache
-php artisan config:cache || true
-php artisan cache:clear || true
+#########################################
+# 5. Apenas continuar para o comando final
+#########################################
 
-# Exec the container command (php-fpm)
 exec "$@"
