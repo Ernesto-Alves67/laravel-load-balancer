@@ -4,8 +4,6 @@ services:
     build:
       context: .
     image: laravel-balancer-app
-    # O Nginx se conectará usando o nome do serviço 'app'
-    # Os containers serão nomeados sequencialmente: app-1, app-2, app-3, ...
     expose:
       - 9000
     volumes:

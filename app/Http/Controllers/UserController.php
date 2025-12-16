@@ -2,48 +2,47 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+    protected $userService;
+
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
+    }
+
     public function index()
     {
-        return User::all();
+        return $this->userService->getAllUsers();
     }
 
     public function show($id)
     {
-        return User::findOrFail($id);
+        return $this->userService->getUserById($id);
     }
 
 
     public function store(Request $request)
     {
         $data = $request->only(['name', 'email', 'password']);
-        $data['password'] = bcrypt($data['password']);
-        $user = User::create($data);
+        $user = $this->userService->createUser($data);
         return response()->json($user, 201);
     }
 
 
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
         $data = $request->only(['name', 'email', 'password']);
-        if (isset($data['password'])) {
-            $data['password'] = bcrypt($data['password']);
-        } else {
-            unset($data['password']);
-        }
-        $user->update($data);
+        $user = $this->userService->updateUser($id, $data);
         return response()->json($user);
     }
 
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
+        $this->userService->deleteUser($id);
         return response()->json(null, 204);
     }
 }

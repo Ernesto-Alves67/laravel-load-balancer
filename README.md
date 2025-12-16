@@ -6,3 +6,6 @@
 
 run comand: sudo docker compose up -d --build
 stop comand: docker down
+
+### testando performance da api
+ab -n 1000 -c 10 http://localhost/api/hello
